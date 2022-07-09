@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+<head>
+    <title>The Legend of Emma</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .grid {
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            font-weight: 900;
+            font-size: large;
+            text-align: center;
+            vertical-align: middle;
+            background-size: contain;
+        }
+    </style>
+    <script language="javascript">
+            //Colors
+            var colMap=["#6272BF","#7E91ED","#16E615","#453402","#777520","#C8C532","#3BC53A","#FFA400","#FF0000","#000000"];
+            //Map
+            var numRow=15;
+            var numCol=20;
+
+            //User location using a zero index
+            var posRow=0;
+            var posCol=3;
+
+            //Var User Text
+            var userFeedback="";
+            var userText = "O";
+            var userImg = "url('imgs/emma.png')";
+
+            var alive=true;
+            var haveSword=false;
+
+            var map=new Array(numRow);
+            map[0]=[7,8,4,4,4,3,3,3,4,5,5,6,2,6,6,1,1,0,0,0];
+            map[1]=[8,7,4,4,4,4,3,4,4,5,5,6,2,6,5,5,1,1,1,0];
+            map[2]=[4,4,5,4,5,4,4,4,5,5,6,6,2,6,6,5,1,1,1,1];
+            map[3]=[4,5,5,5,5,3,4,5,5,5,6,2,2,6,6,5,5,5,5,1];
+            map[4]=[5,5,5,5,4,4,4,5,5,5,6,2,6,6,5,5,4,5,4,3];
+            map[5]=[5,6,6,5,5,4,5,5,6,6,6,2,6,5,5,4,8,4,3,4];
+            map[6]=[6,6,6,5,5,5,5,5,6,2,2,2,6,6,5,5,4,7,3,4];
+            map[7]=[2,2,6,6,6,6,6,6,6,2,2,2,6,6,6,5,5,4,4,5];
+            map[8]=[1,2,2,2,2,2,2,2,2,2,9,2,2,6,6,5,5,3,4,5];
+            map[9]=[1,1,1,2,1,1,1,1,2,2,2,2,2,6,5,5,4,3,4,5];
+            map[10]=[1,1,2,2,2,1,1,1,1,1,1,1,2,6,6,5,4,3,5,5];
+            map[11]=[2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,5,3,4,4];
+            map[12]=[6,6,6,6,6,6,2,2,2,2,2,1,1,1,1,1,1,1,1,4];
+            map[13]=[6,6,6,6,6,6,6,6,6,6,2,2,2,2,2,2,1,1,1,1];
+            map[14]=[6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,2,2,2,2,2];
+
+            function changeButton(pressedButton){
+                var narDiv=document.getElementById("narrative");
+                if(!alive){
+                    narDiv.innerHTML="Reload the page to play again.";
+                    return;
+                }
+                userFeedback="";
+
+                //Erase old position
+                var elementID="d0"+(posRow+1)+"0"+(posCol+1);
+                var oldDiv=document.getElementById(elementID);
+                oldDiv.innerHTML = "";
+                oldDiv.style.backgroundImage = 'none';
+
+
+                //new location
+                var posNewRow=0;
+                var posNewCol=0;
+                //pressed button is a button object
+                posNewRow=posRow;
+                posNewCol=posCol;
+                if(pressedButton.name==="up")posNewRow--;
+                if(pressedButton.name==="left")posNewCol--;
+                if(pressedButton.name==="right")posNewCol++;
+                if(pressedButton.name==="down")posNewRow++;
+                //Can't go off the board
+                if(!checkBounds(posNewRow,posNewCol)){
+                    //put back original marker
+                    oldDiv.style.backgroundImage = "url('imgs/emma.png')";
+                    return;
+                }
+                if(!checkForbiddenSquares(posNewRow,posNewCol)){
+                    //put back original marker
+                    oldDiv.style.backgroundImage = "url('imgs/emma.png')";
+                    narDiv.innerHTML=userFeedback;
+                    return;
+                }
+
+                //Now we can move.
+                posRow=posNewRow;
+                posCol=posNewCol;
+
+                colorSurroundingSquares(posRow,posCol);
+
+                elementID="d0"+(posRow+1)+"0"+(posCol+1);
+                var newDiv=document.getElementById(elementID);
+                if(!checkTraps(posNewRow,posNewCol)){
+                    newDiv.style.backgroundImage = userImg;
+                    narDiv.innerHTML=userFeedback;
+                    alive=false;
+                    return;
+                }
+                if(!checkMonster(posRow,posCol)){
+                    newDiv.style.backgroundImage = userImg;
+                    narDiv.innerHTML=userFeedback;
+                    alive=false;
+                    return;
+                }
+                if(gotHome(posRow,posCol)){
+                    //newDiv.innerHTML=":o)";
+                    narDiv.innerHTML = "Hooray you made it.";
+                    newDiv.style.backgroundImage = "url('imgs/emma_glasses.png')";
+                    newDiv.innerHTML = "";
+                    alive=false;
+                    return;
+                }
+
+                gotSword(posRow,posCol);
+                narDiv.innerHTML=userFeedback;
+                newDiv.style.backgroundImage = userImg;
+            }
+            function checkBounds(newRow, newCol){
+                if(newRow < 0 || newCol <0)return false;
+                if(newRow > numRow-1 || newCol > numCol-1) return false;
+                return true;
+            }
+            function checkForbiddenSquares(newRow, newCol){
+                if(map[newRow][newCol]<2){
+                    userFeedback="You can't swim!";
+                    return false;
+                }
+                if(map[newRow][newCol]===3){
+                    userFeedback="This mountain is too high to climb!";
+                    return false;
+                }
+                return true;
+            }
+            function checkTraps(newRow, newCol){
+                if(map[newRow][newCol]===9){
+                    userFeedback = "AAAAAaaaaaagggghhhh you fell into the bottomless pit.";
+                    userImg = "none";
+                    return false;
+                }
+                if(map[newRow][newCol]===7 ||map[newRow][newCol]===8){
+                    userFeedback = "Sizzle sizzle. Lava pits are not good places to swim.";
+                    userImg = "none";
+                    userText="{!{";
+                    return false;
+                }
+                return true;
+            }
+            function checkMonster(newRow,newCol){
+                if(newRow+1===10 && newCol+1===4 && !haveSword){
+                    userImg = "url('imgs/emma_sad.png')";
+                    userFeedback="You got caught by Mark and forced to do data entry on consent forms. Finding a consent form might appease him next time.";
+                    return false;
+                }
+                if(newRow+1===10 && newCol+1===4 && haveSword){
+                    //userText="";
+                    userFeedback="Mark: Thank you, Emma! I've been looking for this consent form everywhere.";
+                    return true;
+                }
+                return true;
+
+            }
+            function gotSword(newRow,newCol){
+                if(newRow+1===11 && newCol+1===20){
+                    haveSword = true;
+                    userFeedback="You found a consent form, and it's got a cute Mose drawn on it. This could be handy if you run into Mark.";
+                }
+            }
+            function gotHome(newRow,newCol){
+                if(newRow+1===15 && newCol+1===20)return true;
+                return false;
+            }
+            function colorSurroundingSquares(newRow,newCol){
+                for(r=newRow-1;r<=newRow+1;r++){
+                    for(c=newCol-1;c<=newCol+1;c++){
+                        if(checkBounds(r,c)){
+                            var elementID="d0"+(r+1)+"0"+(c+1);
+                            var myDiv=document.getElementById(elementID);
+                            var mapElement=map[r][c];
+                            myDiv.style.backgroundColor = colMap[mapElement];
+                            if (r === 9 && c === 3) {
+                                myDiv.style.backgroundImage = "url('imgs/mark.png')";
+                            }
+                            if (r === 10 && c === 19) {
+                                myDiv.style.backgroundImage = "url('imgs/mose.png')";
+                            }
+                        }
+                    }
+                }
+            }
+
+    </script>
+</head>
+<body>
+    <script language="javascript">
+            //Auto generate grid
+            var col1="#222222";
+            var col2="#999922";
+            var col3="#ff0000";
+            var width=35;
+            var height=35;
+            var which=0;
+            for (row=1;row<=numRow;row++){
+                for(col=1;col<=numCol;col++){
+                    var elementID="d0"+row+"0"+col;
+                    var elementClass="grid"
+                    var myDiv = document.createElement('div');
+                    myDiv.id = elementID;
+                    myDiv.className = elementClass;
+
+                    var mleft=(col-1)*width;
+                    var mtop=(row-1)*height;
+                    myDiv.style.left=mleft+"px";
+                    myDiv.style.top=""+mtop+"px";
+                    var mapElement=map[row-1][col-1];
+                    myDiv.style.backgroundColor="#000000";
+                    document.getElementsByTagName('body')[0].appendChild(myDiv);
+                }
+            }
+            var elementID="d0"+1+"0"+4;
+            var myDiv = document.getElementById(elementID);
+            myDiv.style.backgroundImage = "url('imgs/emma.png')";
+            colorSurroundingSquares(0,3);
+
+            var elementID="d0"+11+"0"+20;
+            var myDiv=document.getElementById(elementID);
+
+            var elementID="d0"+10+"0"+4;
+            var myDiv=document.getElementById(elementID);
+
+            var elementID="d0"+15+"0"+20;
+            var myDiv=document.getElementById(elementID);
+            myDiv.innerHTML="H";
+    </script>
+
+    <div id="narrative" style="position: absolute; left: 0px; top: 535px">Save Peter from being trapped in the game, but beware of traps and bosses.</div>
+    <div id="buttons" style="position: absolute; left: 300px; top: 550px; text-align: center;">
+        <p><button type="button" name="up" class="myButton" onClick="changeButton(this)">UP</button></p>
+        <p><button type="button" name="left" class="myButton" onClick="changeButton(this)"><-</button><button type="button" name="right" class="myButton" onClick="changeButton(this)">-></button></p>
+        <p><button type="button" name="down" class="myButton" onClick="changeButton(this)">DOWN</button></p>
+    </div>
+</body>
+</html>
