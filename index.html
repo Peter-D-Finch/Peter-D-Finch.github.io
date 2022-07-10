@@ -23,6 +23,10 @@ and open the template in the editor.
         }
     </style>
     <script language="javascript">
+
+            var music = new Audio('sound/zelda.mp3');
+            console.log("doing it");
+
             //Colors
             var colMap=["#6272BF","#7E91ED","#16E615","#453402","#777520","#C8C532","#3BC53A","#FFA400","#FF0000","#000000"];
             //Map
@@ -58,7 +62,8 @@ and open the template in the editor.
             map[13]=[6,6,6,6,6,6,6,6,6,6,2,2,2,2,2,2,1,1,1,1];
             map[14]=[6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,2,2,2,2,2];
 
-            function changeButton(pressedButton){
+        function changeButton(pressedButton) {
+                music.play();
                 var narDiv=document.getElementById("narrative");
                 if(!alive){
                     narDiv.innerHTML="Reload the page to play again.";
@@ -117,8 +122,7 @@ and open the template in the editor.
                     return;
                 }
                 if(gotHome(posRow,posCol)){
-                    //newDiv.innerHTML=":o)";
-                    narDiv.innerHTML = "Hooray you made it.";
+                    narDiv.innerHTML = "Peter: Emma, you saved me from being trapped in this game! Thank you so much!! YOU'RE THE COOLEST PERSON EVER.</br></br>Okay, on a serious note... HAPPY BIRTHDAY, EMMA! You're amazing and I hope you have the best birthday ever.";
                     newDiv.style.backgroundImage = "url('imgs/emma_glasses.png')";
                     newDiv.innerHTML = "";
                     alive=false;
@@ -197,6 +201,9 @@ and open the template in the editor.
                             if (r === 10 && c === 19) {
                                 myDiv.style.backgroundImage = "url('imgs/mose.png')";
                             }
+                            if (r === 14 && c === 19) {
+                                myDiv.style.backgroundImage = "url('imgs/peter.png')";
+                            }
                         }
                     }
                 }
@@ -206,44 +213,43 @@ and open the template in the editor.
 </head>
 <body>
     <script language="javascript">
-            //Auto generate grid
-            var col1="#222222";
-            var col2="#999922";
-            var col3="#ff0000";
-            var width=35;
-            var height=35;
-            var which=0;
-            for (row=1;row<=numRow;row++){
-                for(col=1;col<=numCol;col++){
-                    var elementID="d0"+row+"0"+col;
-                    var elementClass="grid"
-                    var myDiv = document.createElement('div');
-                    myDiv.id = elementID;
-                    myDiv.className = elementClass;
+        //Auto generate grid
+        var col1 = "#222222";
+        var col2 = "#999922";
+        var col3 = "#ff0000";
+        var width = 35;
+        var height = 35;
+        var which = 0;
+        for (row = 1; row <= numRow; row++) {
+            for (col = 1; col <= numCol; col++) {
+                var elementID = "d0" + row + "0" + col;
+                var elementClass = "grid"
+                var myDiv = document.createElement('div');
+                myDiv.id = elementID;
+                myDiv.className = elementClass;
 
-                    var mleft=(col-1)*width;
-                    var mtop=(row-1)*height;
-                    myDiv.style.left=mleft+"px";
-                    myDiv.style.top=""+mtop+"px";
-                    var mapElement=map[row-1][col-1];
-                    myDiv.style.backgroundColor="#000000";
-                    document.getElementsByTagName('body')[0].appendChild(myDiv);
-                }
+                var mleft = (col - 1) * width;
+                var mtop = (row - 1) * height;
+                myDiv.style.left = mleft + "px";
+                myDiv.style.top = "" + mtop + "px";
+                var mapElement = map[row - 1][col - 1];
+                myDiv.style.backgroundColor = "#000000";
+                document.getElementsByTagName('body')[0].appendChild(myDiv);
             }
-            var elementID="d0"+1+"0"+4;
-            var myDiv = document.getElementById(elementID);
-            myDiv.style.backgroundImage = "url('imgs/emma.png')";
-            colorSurroundingSquares(0,3);
+        }
+        var elementID = "d0" + 1 + "0" + 4;
+        var myDiv = document.getElementById(elementID);
+        myDiv.style.backgroundImage = "url('imgs/emma.png')";
+        colorSurroundingSquares(0, 3);
 
-            var elementID="d0"+11+"0"+20;
-            var myDiv=document.getElementById(elementID);
+        var elementID = "d0" + 11 + "0" + 20;
+        var myDiv = document.getElementById(elementID);
 
-            var elementID="d0"+10+"0"+4;
-            var myDiv=document.getElementById(elementID);
+        var elementID = "d0" + 10 + "0" + 4;
+        var myDiv = document.getElementById(elementID);
 
-            var elementID="d0"+15+"0"+20;
-            var myDiv=document.getElementById(elementID);
-            myDiv.innerHTML="H";
+        var elementID = "d0" + 15 + "0" + 20;
+        var myDiv = document.getElementById(elementID);
     </script>
 
     <div id="narrative" style="position: absolute; left: 0px; top: 535px">Save Peter from being trapped in the game, but beware of traps and bosses.</div>
@@ -252,5 +258,6 @@ and open the template in the editor.
         <p><button type="button" name="left" class="myButton" onClick="changeButton(this)"><-</button><button type="button" name="right" class="myButton" onClick="changeButton(this)">-></button></p>
         <p><button type="button" name="down" class="myButton" onClick="changeButton(this)">DOWN</button></p>
     </div>
+    <embed src="sound/zelda.mp3" loop="true" autostart="true" width="200" height="100">
 </body>
 </html>
