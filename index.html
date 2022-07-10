@@ -27,8 +27,8 @@ and open the template in the editor.
             var music = new Audio('sound/zelda.mp3');
             console.log("doing it");
 
-            //Colors
-            var colMap=["#6272BF","#7E91ED","#16E615","#453402","#777520","#C8C532","#3BC53A","#FFA400","#FF0000","#000000"];
+            //Colors        0         1          2         3         4        5          6        7          8         9
+        var colMap = ["#666666", "#666666", "#BBBBBB", "#666666", "#999999", "#BBBBBB", "#BBBBBB", "#FFA400","#333333","#333333"];
             //Map
             var numRow=15;
             var numCol=20;
@@ -46,27 +46,26 @@ and open the template in the editor.
             var haveSword=false;
 
             var map=new Array(numRow);
-            map[0]=[6,6,6,4,6,3,3,3,4,5,5,6,2,6,6,1,1,0,0,0];
-            map[1]=[6,6,6,4,6,4,3,4,4,5,5,6,2,6,5,5,1,1,1,0];
-            map[2]=[6,6,6,4,6,4,4,4,5,5,6,6,2,6,6,5,1,1,1,1];
-            map[3]=[6,6,6,4,6,3,4,5,5,5,6,2,2,6,6,5,5,5,5,1];
+            map[0]=[6,6,6,4,6,3,6,6,6,6,6,3,2,6,6,1,1,0,0,0];
+            map[1]=[6,6,6,4,6,3,6,6,6,6,6,3,2,6,5,5,1,1,1,0];
+            map[2]=[6,6,6,4,6,3,6,6,6,6,6,3,2,6,6,5,1,1,1,1];
+            map[3]=[6,6,6,4,6,3,3,3,5,3,3,3,2,6,6,5,5,5,5,1];
             map[4]=[6,6,5,4,6,4,4,5,5,5,6,2,6,6,5,5,4,5,4,3];
-            map[5]=[5,6,6,4,6,4,5,5,6,6,6,2,6,5,5,4,8,4,3,4];
-            map[6]=[6,6,6,4,5,5,5,5,6,2,2,2,6,6,5,5,4,7,3,4];
-            map[7]=[2,2,6,4,6,6,6,6,4,4,4,4,4,4,6,5,5,4,4,5];
-            map[8]=[1,2,2,4,4,4,4,4,4,2,9,2,2,6,6,5,5,3,4,5];
-            map[9]=[1,1,1,2,1,1,1,1,2,2,2,2,2,6,5,5,4,3,4,5];
-            map[10]=[1,1,2,2,2,1,1,1,1,1,1,1,2,6,6,5,4,3,5,5];
+            map[5]=[5,6,6,4,6,4,5,5,6,6,6,2,6,5,5,4,6,3,3,3];
+            map[6]=[6,6,6,4,5,5,5,5,6,2,2,2,6,6,5,5,4,3,8,8];
+            map[7]=[2,2,6,4,6,6,6,6,4,4,4,4,4,4,6,5,5,4,8,8];
+            map[8]=[1,2,2,4,4,4,4,4,4,2,9,2,2,6,6,5,5,3,8,8];
+            map[9]=[1,1,1,2,1,1,1,1,2,2,2,2,2,6,5,5,4,3,8,8];
+            map[10]=[1,1,2,2,2,1,1,1,1,1,1,1,2,6,6,5,4,3,8,8];
             map[11]=[2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,5,3,4,4];
             map[12]=[6,6,6,6,6,6,2,2,2,2,2,1,1,1,1,1,1,1,1,4];
             map[13]=[6,6,6,6,6,6,6,6,6,6,2,2,2,2,2,2,1,1,1,1];
             map[14]=[6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,2,2,2,2,2];
 
-        function changeButton(pressedButton) {
+            function changeButton(pressedButton) {
                 music.play();
                 var narDiv=document.getElementById("narrative");
                 if(!alive){
-                    narDiv.innerHTML="Reload the page to play again.";
                     return;
                 }
                 userFeedback="";
@@ -140,22 +139,22 @@ and open the template in the editor.
             }
             function checkForbiddenSquares(newRow, newCol){
                 if(map[newRow][newCol]<2){
-                    userFeedback="You can't swim!";
+                    userFeedback="You can't pass through walls!";
                     return false;
                 }
                 if(map[newRow][newCol]===3){
-                    userFeedback="This mountain is too high to climb!";
+                    userFeedback ="You can't pass through walls!";
                     return false;
                 }
                 return true;
             }
             function checkTraps(newRow, newCol){
                 if(map[newRow][newCol]===9){
-                    userFeedback = "AAAAAaaaaaagggghhhh you fell into the bottomless pit.";
+                    userFeedback = "AAAAAaaaaaagggghhhh Beth sent you on TDY to Taos and Peter died in the game! Reload to try again.";
                     userImg = "none";
                     return false;
                 }
-                if(map[newRow][newCol]===7 ||map[newRow][newCol]===8){
+                if(map[newRow][newCol]===100 ||map[newRow][newCol]===100){
                     userFeedback = "Sizzle sizzle. Lava pits are not good places to swim.";
                     userImg = "none";
                     userText="{!{";
@@ -166,13 +165,18 @@ and open the template in the editor.
             function checkMonster(newRow,newCol){
                 if(newRow+1===10 && newCol+1===4 && !haveSword){
                     userImg = "url('imgs/emma_sad.png')";
-                    userFeedback="You got caught by Mark and forced to do data entry on consent forms. Finding a consent form might appease him next time.";
+                    userFeedback="You got caught by Mark and forced to do data entry on consent forms for months. Peter died in the game. Finding a consent form might appease him next time. Reload to try again.";
                     return false;
                 }
                 if(newRow+1===10 && newCol+1===4 && haveSword){
                     //userText="";
                     userFeedback="Mark: Thank you, Emma! I've been looking for this consent form everywhere.";
                     return true;
+                }
+                if (newRow + 1 === 4 && newCol + 1 === 9) {
+                    userImg = "none";
+                    userFeedback = "Tim was able to lure you away from the office with Disk Golf and Peter died in the game. Reload to try again";
+                    return false;
                 }
                 return true;
 
@@ -203,6 +207,12 @@ and open the template in the editor.
                             }
                             if (r === 14 && c === 19) {
                                 myDiv.style.backgroundImage = "url('imgs/peter.png')";
+                            }
+                            if (r === 3 && c === 8) {
+                                myDiv.style.backgroundImage = "url('imgs/tim.png')";
+                            }
+                            if (r === 8 && c === 10) {
+                                myDiv.style.backgroundImage = "url('imgs/beth.png')";
                             }
                         }
                     }
@@ -252,7 +262,7 @@ and open the template in the editor.
         var myDiv = document.getElementById(elementID);
     </script>
 
-    <div id="narrative" style="position: absolute; left: 0px; top: 535px">Save Peter from being trapped in the game, but beware of traps and bosses. HINT: He might be in the bottom right corner...</br> BLUE tiles are water, BROWN are mountains. Neither can be crossed. RED & ORANGE tiles are lava and will kill you!!!</br>TIP: Don't click the move buttons too fast or you could miss dialogue!'</div>
+    <div id="narrative" style="position: absolute; left: 0px; top: 535px">Save Peter from being trapped in the game, but beware of bosses and coworkers. HINT: He might be in the bottom right corner...</br> DARK GRAY tiles are walls you can't move through</br>TIP: Don't click the move buttons too fast or you could miss dialogue!'</div>
     <div id="buttons" style="position: absolute; left: 300px; top: 650px; text-align: center;">
         <p><button type="button" name="up" class="myButton" style="font-size: 25px;" onClick="changeButton(this)">UP</button></p>
         <p></p><button type="button" name="left" class="myButton" style="font-size: 25px;" onClick="changeButton(this)"><-</button><button type="button" name="right" style="font-size: 25px;" class="myButton" onClick="changeButton(this)">-></button></p>
